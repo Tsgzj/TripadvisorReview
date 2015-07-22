@@ -17,3 +17,6 @@ Edit it as follow format:
     another-url; another-outputname
 
 Run `run.sh` or `run.bat`(for windows user)
+
+Get yourself a cup of coffee and wait for a few minutes, based on the
+MAX_REVIEW_PAGE you set.
