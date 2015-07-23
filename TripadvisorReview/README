@@ -1,5 +1,6 @@
 # Requirements
 Python 2
+
 [Scrapy](https://github.com/scrapy/scrapy) (The quick way: pip install scrapy)
 
 # How to use
@@ -16,7 +17,7 @@ Edit it as follow format:
     url; outputname
     another-url; another-outputname
 
-Run `run.sh` or `run.bat`(for windows user)
+Run `run.sh` or `run.bat`(for windows user)(Not supported)
 
 Get yourself a cup of coffee and wait for a few minutes, based on the
 MAX_REVIEW_PAGE you set.

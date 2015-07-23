@@ -34,7 +34,8 @@ class TadvSpider(scrapy.Spider):
     name = "Tadv"
     base_url = "http://www.tripadvisor.com"
     allowed_domains = ["tripadvisor.com"]
-    tripadvisor_items = []
+    tripadvisor_items = TripadvisorreviewItem()
+    reviews = []
     counter_page_review = 0
 
     def __init__(self, *args, **kwargs):
@@ -42,28 +43,45 @@ class TadvSpider(scrapy.Spider):
       self.start_urls = kwargs.get('start_urls').split(',')
 
     def parse(self, response):
+        for sel in response.xpath("//div[@id='REVIEWS']"):
+            expanded_review_url = strip_tags(sel.xpath("//div[@class='deckTools btm']//a[2]/@href").extract()[0])
+
+            if expanded_review_url and len(expanded_review_url) > 0:
+                yield scrapy.Request(self.base_url + expanded_review_url, callback = self.parse_review_page)
+
+
+
+
+    def parse_review_page(self, response):
         if (self.counter_page_review < MAX_REVIEWS_PAGES or MAX_REVIEWS_PAGES <= 0):
             self.counter_page_review += 1
 
             for sel in response.xpath("//div[@id='REVIEWS']"):
+                # The defulet reviews are shrinked
+                # You need to click 'More' to get the complete content
+                # To avoid this, click on one of the reviews to jump to
+                # expanded reviews
+
                 #raw_title = sel.xpath("//div[@class='quote isNew']/a/span[@class='noQuotes']").extract()
-                raw_entry = sel.xpath("//div[@class='wrap']/div[@class='entry']").extract()
+                #raw_entry = sel.xpath("//div[@class='wrap']/div[@class='entry']").extract()
                 #stripped_title = strip_all(raw_title)
+                raw_entry = sel.xpath("//div[@class='innerBubble']/div[@class='entry']").extract()
                 stripped_entry = strip_all(raw_entry)
 
-                tripadvisor_item = TripadvisorreviewItem()
+                #tripadvisor_item = TripadvisorreviewItem()
                 #tripadvisor_item['title'] = stripped_title
-                tripadvisor_item['entry'] = stripped_entry
+                #tripadvisor_item['entry'] = stripped_entry
+                # crappy way
+                self.reviews += stripped_entry
 
-                self.tripadvisor_items.append(tripadvisor_item)
+            next_page_url = strip_tags(response.xpath("//div[@class='deckTools btm']//a[2]/@href").extract()[0])
 
-                next_page_url = strip_tags(sel.xpath("//div[@class='deckTools btm']//a[2]/@href").extract()[0])
-
-                if next_page_url and len(next_page_url) > 0:
-                    yield scrapy.Request(self.base_url + next_page_url,
-                                     callback=self.parse)
-                else:
-                    yield self.tripadvisor_items
-
+            if next_page_url and len(next_page_url) > 0:
+                yield scrapy.Request(self.base_url + next_page_url, callback=self.parse_review_page)
             else:
-                yield self.tripadvisor_tems
+                #yield self.tripadvisor_items
+                return
+
+        else:
+            self.tripadvisor_items['entry'] = self.reviews
+            yield self.tripadvisor_items
