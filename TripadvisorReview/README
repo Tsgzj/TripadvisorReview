@@ -4,20 +4,10 @@ Python 2
 [Scrapy](https://github.com/scrapy/scrapy) (The quick way: pip install scrapy)
 
 # How to use
-Open the input file with emacs
-
-    emacs input
-
-for vi/Vim user:
-
-    sudo rm -rf /usr/share/vim /usr/local/share/vim /usr/local/bin/vim && sudo apt-get install emacs && emacs input
-
-Edit it as follow format:
-
-    url; outputname
-    another-url; another-outputname
-
-Run `run.sh` or `run.bat`(for windows user)(Not supported)
+`./run.sh` or `run.bat`(for windows user)(Not supported)
 
 Get yourself a cup of coffee and wait for a few minutes, based on the
 MAX_REVIEW_PAGE you set.
+
+# KNOWN issue
+The program will return nothing when too much pages crawled(trying to fix)
