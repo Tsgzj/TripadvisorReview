@@ -4,7 +4,7 @@ from TripadvisorReview.items import TripadvisorreviewItem
 
 # max number of pages allowed to fetch
 # set this to negative or 0 to fetch all
-MAX_REVIEWS_PAGES = 100
+MAX_REVIEWS_PAGES = 1000
 
 from HTMLParser import HTMLParser
 
