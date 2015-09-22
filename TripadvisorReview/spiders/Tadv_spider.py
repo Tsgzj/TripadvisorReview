@@ -71,12 +71,14 @@ class TadvSpider(scrapy.Spider):
             stripped_entry = strip_all(raw_entry)
             self.reviews += stripped_entry
 
-            next_page_url = strip_tags(response.xpath("//div[@class='deckTools btm']//a[2]/@href").extract()[0])
+            # check if there is next page
+            next_page_url = response.xpath("//div[@class='deckTools btm']//a[contains(@class,'nav next rndBtn rndBtnGreen')]/@href")
 
-            if next_page_url and len(next_page_url) > 0:
-                yield scrapy.Request(self.base_url + next_page_url, callback=self.parse_review_page)
+            if next_page_url:
+                yield scrapy.Request(self.base_url + strip_tags(next_page_url.extract()[0]), callback=self.parse_review_page)
             else:
-                return
+                self.tripadvisor_items['entry'] = self.reviews
+                yield self.tripadvisor_items
 
         else:
             self.tripadvisor_items['entry'] = self.reviews
